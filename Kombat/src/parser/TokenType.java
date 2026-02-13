@@ -1,4 +1,34 @@
 package parser;
 
-public class TokenType {
+public enum TokenType {
+    // literals
+    NUMBER,
+    IDENT,
+
+    // keywords
+    IF,
+    ELSE,
+    WHILE,
+    MOVE,
+    SHOOT,
+    DONE,
+
+    // operators
+    PLUS,      // +
+    MINUS,     // -
+    STAR,      // *
+    SLASH,     // /
+    MOD,       // %
+    POW,       // ^
+
+    ASSIGN,    // =
+    LPAREN,    // (
+    RPAREN,    // )
+    LBRACE,    // {
+    RBRACE,    // }
+    SEMICOLON, // ;
+
+    DIRECTION, // UP DOWN ...
+
+    EOF
 }
