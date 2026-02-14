@@ -26,4 +26,6 @@ public class Hex {
     public void setMinion(Minion m) {
         this.minion = m;
     }
+
+
 }

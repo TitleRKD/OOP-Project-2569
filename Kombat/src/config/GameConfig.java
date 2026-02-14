@@ -45,6 +45,7 @@ public class GameConfig {
         } catch (IOException ex) {
             ex.printStackTrace();
         }
+
     }
     public Config toConfig() {
         Config c = new Config();
