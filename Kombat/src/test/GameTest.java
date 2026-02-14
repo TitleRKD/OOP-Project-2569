@@ -18,6 +18,6 @@ public class GameTest {
         Player p2 = new Player("P2", false);
 
         Game game = new Game(config, p1, p2, GameMode.SOLITAIRE);
-        game.getConfig().showConfig();
+        game.showConfig();
     }
 }

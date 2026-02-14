@@ -38,4 +38,16 @@ public class Game {
     public Config getConfig() {
         return config;
     }
+
+    public void showConfig() {
+        System.out.println("spawncost = " + config.spawnCost);
+        System.out.println("hex_purchasecost = " + config.hexPurchaseCost);
+        System.out.println("initbudget = " + config.initBudget);
+        System.out.println("inithp = " + config.initHp);
+        System.out.println("turnBudget = " + config.turnBudget);
+        System.out.println("maxBudget = " + config.maxBudget);
+        System.out.println("interestPct = " + config.interestPct);
+        System.out.println("maxTurns = " + config.maxTurns);
+        System.out.println("maxSpawns = " + config.maxSpawns);
+    }
 }
