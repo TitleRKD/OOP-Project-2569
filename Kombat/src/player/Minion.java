@@ -31,8 +31,23 @@ public class Minion {
 //        type.getStrategy().execute(this, ctx);
 //    }
 
-    public void move(Direction dir) {
+    public void move(Direction direction,GameContext context) {
+        Board board = context.getBoard(); //เอาข้อมูล board จาก context
+        Hex current = board.getHex(row, col);
+        Hex next = board.getHexDirection(current, direction);
 
+        if (next == null){ return; }       // ออกนอกกระดาน
+        if (next.hasMinion()) { return; }  // ช่องเต็ม
+
+        // remove จากช่องเก่า
+        board.removeMinion(this);
+
+        // update position
+        this.row = next.getRow();
+        this.col = next.getCol();
+
+        // place ช่องใหม่
+        board.placeMinion(this, row, col);
     }
     public void shoot(Direction dir, long expenditure) {
 
