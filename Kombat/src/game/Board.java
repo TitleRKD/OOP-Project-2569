@@ -141,17 +141,44 @@ public class Board {
         return getHex(nearRow, nearCol);
     }
 
-    public void printBoard() {
-        for (int r = 1; r <= grid.length; r++) {
-            for (int c = 1; c <= grid[0].length; c++) {
-                Hex h = getHex(r, c);
-                if (h.hasMinion()) {
-                    System.out.print("[M]");
+    public void printBoard() { // เอาไว้ print สวยเฉยๆ
+
+        int rows = grid.length;
+        int cols = grid[0].length;
+
+        for (int r = 1; r <= rows + 1; r++) {
+
+            for (int c = 1; c <= cols; c++) {
+
+                // column คี่ → ต่ำลง 1 ช่อง
+                int logicalRow = (c % 2 == 1) ? r - 1 : r;
+
+                if (logicalRow >= 1 && logicalRow <= rows) {
+
+                    Hex h = getHex(logicalRow, c);
+                    System.out.print(h.hasMinion() ? "[M]" : "[ ]");
+
                 } else {
-                    System.out.print("[ ]");
+                    System.out.print("   "); // ช่องว่างตอน offset
                 }
             }
+
             System.out.println();
         }
     }
+
+
+//    public void printBoard() {
+//        for (int r = 1; r <= grid.length; r++) {
+//            for (int c = 1; c <= grid[0].length; c++) {
+//                Hex h = getHex(r, c);
+//                if (h.hasMinion()) {
+//                    System.out.print("[M]");
+//                } else {
+//                    System.out.print("[ ]");
+//                }
+//            }
+//            System.out.println();
+//        }
+//    }
 }

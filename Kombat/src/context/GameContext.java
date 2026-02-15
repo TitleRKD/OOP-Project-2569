@@ -19,6 +19,8 @@ public class GameContext {
         this.currentPlayer = currentPlayer;
     }
 
+    public Board getBoard() { return board; }
+
     public long getBudget() {
         return (long) currentPlayer.getBudget();
     }
