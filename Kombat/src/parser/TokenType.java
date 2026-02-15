@@ -33,7 +33,10 @@ public enum TokenType {
     OPPONENT,
     NEARBY,
 
+    THEN,
+
     DIRECTION, // UP DOWN ...
 
+    NEWLINE, // \n
     EOF
 }
