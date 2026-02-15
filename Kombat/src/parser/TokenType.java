@@ -28,6 +28,11 @@ public enum TokenType {
     RBRACE,    // }
     SEMICOLON, // ;
 
+    //New
+    ALLY,
+    OPPONENT,
+    NEARBY,
+
     DIRECTION, // UP DOWN ...
 
     EOF

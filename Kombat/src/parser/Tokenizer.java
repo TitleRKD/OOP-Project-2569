@@ -35,6 +35,7 @@ public class Tokenizer {
                 case ' ':
                 case '\n':
                 case '\t':
+                case '\r':
                     break;
 
                 default:
@@ -42,6 +43,8 @@ public class Tokenizer {
                         tokens.add(number(c));
                     } else if (Character.isLetter(c)) {
                         tokens.add(identifier(c));
+                    } else {
+                        throw new RuntimeException("Unexpected character: " + c);
                     }
             }
         }
@@ -77,12 +80,15 @@ public class Tokenizer {
             case "move": return new Token(TokenType.MOVE, word);
             case "shoot": return new Token(TokenType.SHOOT, word);
             case "done": return new Token(TokenType.DONE, word);
-            case "UP":
-            case "DOWN":
-            case "UPLEFT":
-            case "UPRIGHT":
-            case "DOWNLEFT":
-            case "DOWNRIGHT":
+            case "ally": return new Token(TokenType.ALLY, word);
+            case "opponent": return new Token(TokenType.OPPONENT, word);
+            case "nearby": return new Token(TokenType.NEARBY, word);
+            case "up":
+            case "down":
+            case "upleft":
+            case "upright":
+            case "downleft":
+            case "downright":
                 return new Token(TokenType.DIRECTION, word);
             default:
                 return new Token(TokenType.IDENT, word);
