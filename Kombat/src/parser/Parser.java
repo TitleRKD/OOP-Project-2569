@@ -1,5 +1,6 @@
 package parser;
 
+import enums.InfoType;
 import strategy.Core.Strategy;
 import strategy.Core.Statement;
 import strategy.Core.Expression;
@@ -20,7 +21,6 @@ public class Parser {
         this.tokens = tokens;
     }
 
-    // ===== entry point =====
     public Strategy parseStrategy() {
         List<Statement> stmts = new ArrayList<>();
         while (!check(TokenType.EOF)) {
@@ -34,10 +34,12 @@ public class Parser {
         if (match(TokenType.WHILE)) return parseWhile();
         if (match(TokenType.MOVE)) return parseMove();
         if (match(TokenType.SHOOT)) return parseShoot();
-        if (match(TokenType.DONE)) return new DoneCommand();
+        if (match(TokenType.DONE)) {
+            consume(TokenType.SEMICOLON);
+            return new DoneCommand();
+        }
         if (match(TokenType.LBRACE)) return parseBlock();
 
-        // assignment
         Token name = consume(TokenType.IDENT);
         consume(TokenType.ASSIGN);
         Expression expr = parseExpression();
@@ -71,24 +73,22 @@ public class Parser {
     }
 
     private Statement parseMove() {
-        Direction dir = Direction.valueOf(consume(TokenType.DIRECTION).lexeme);
+        Direction dir = Direction.valueOf(consume(TokenType.DIRECTION).lexeme.toUpperCase());
         consume(TokenType.SEMICOLON);
         return new MoveCommand(dir);
     }
 
     private Statement parseShoot() {
-        Direction dir = Direction.valueOf(consume(TokenType.DIRECTION).lexeme);
+        Direction dir = Direction.valueOf(consume(TokenType.DIRECTION).lexeme.toUpperCase());
         Expression cost = parseExpression();
         consume(TokenType.SEMICOLON);
         return new ShootCommand(dir, cost);
     }
 
-    // ===== expressions =====
     private Expression parseExpression() {
         Expression expr = parseTerm();
         while (match(TokenType.PLUS, TokenType.MINUS)) {
-            Operator op = previous().type == TokenType.PLUS
-                    ? Operator.ADD : Operator.SUB;
+            Operator op = previous().type == TokenType.PLUS ? Operator.ADD : Operator.SUB;
             Expression right = parseTerm();
             expr = new BinaryExpression(expr, right, op);
         }
@@ -116,6 +116,16 @@ public class Parser {
         if (match(TokenType.IDENT)) {
             return new VariableExpression(previous().lexeme);
         }
+        if (match(TokenType.ALLY)) {
+            return new InfoExpression(InfoType.ALLY, null);
+        }
+        if (match(TokenType.OPPONENT)) {
+            return new InfoExpression(InfoType.OPPONENT, null);
+        }
+        if (match(TokenType.NEARBY)) {
+            Direction dir = Direction.valueOf(consume(TokenType.DIRECTION).lexeme.toUpperCase());
+            return new InfoExpression(InfoType.NEARBY, dir);
+        }
         if (match(TokenType.LPAREN)) {
             Expression expr = parseExpression();
             consume(TokenType.RPAREN);
@@ -124,7 +134,6 @@ public class Parser {
         throw new RuntimeException("Unexpected token: " + peek());
     }
 
-    // ===== helpers =====
     private boolean match(TokenType... types) {
         for (TokenType t : types) {
             if (check(t)) {
