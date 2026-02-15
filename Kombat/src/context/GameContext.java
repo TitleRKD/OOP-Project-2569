@@ -127,6 +127,5 @@ public class GameContext {
     }
 
     public Game getGame() { return game; }
-    public Board getBoard() { return board; }
     public Player getCurrentPlayer() { return currentPlayer; }
 }
