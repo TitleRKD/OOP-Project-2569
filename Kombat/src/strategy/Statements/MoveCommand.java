@@ -13,6 +13,6 @@ public class MoveCommand extends ActionCommand {
 
     @Override
     public void execute(ExecutionContext ctx) {
-        ctx.getMinion().move(direction, ctx.getGameContext());
+        ctx.getMinion().move(direction);
     }
 }
