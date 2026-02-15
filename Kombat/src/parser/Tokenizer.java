@@ -31,11 +31,11 @@ public class Tokenizer {
                 case '{': tokens.add(new Token(TokenType.LBRACE, "{")); break;
                 case '}': tokens.add(new Token(TokenType.RBRACE, "}")); break;
                 case ';': tokens.add(new Token(TokenType.SEMICOLON, ";")); break;
-
-                case ' ':
-                case '\n':
-                case '\t':
+                case '#': while (!isAtEnd() && peek() != '\n') advance(); break;
+                case '\n': tokens.add(new Token(TokenType.NEWLINE, "\n")); break;
                 case '\r':
+                case '\t':
+                case ' ':
                     break;
 
                 default:
@@ -83,12 +83,15 @@ public class Tokenizer {
             case "ally": return new Token(TokenType.ALLY, word);
             case "opponent": return new Token(TokenType.OPPONENT, word);
             case "nearby": return new Token(TokenType.NEARBY, word);
+            case "then": return new Token(TokenType.THEN, word);
             case "up":
             case "down":
             case "upleft":
             case "upright":
             case "downleft":
             case "downright":
+            case "left":
+            case "right":
                 return new Token(TokenType.DIRECTION, word);
             default:
                 return new Token(TokenType.IDENT, word);

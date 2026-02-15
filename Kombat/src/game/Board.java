@@ -101,7 +101,9 @@ public class Board {
                 {-1, -1},
                 {-1, 1},
                 {0, -1},
-                {0, 1}
+                {0, 1},
+                {0, -1}, // LEFT
+                {0, 1}   // RIGHT
         };
         int[][] oddColDirs = {
                 {-1, 0},
@@ -109,7 +111,9 @@ public class Board {
                 {0, -1},
                 {0, 1},
                 {1, -1},
-                {1, 1}
+                {1, 1},
+                {0, -1}, // LEFT
+                {0, 1}   // RIGHT
         };
 
         int[][] dirs;
@@ -126,6 +130,8 @@ public class Board {
             case UPRIGHT -> 3;
             case DOWNLEFT -> 4;
             case DOWNRIGHT -> 5;
+            case LEFT -> 6;
+            case RIGHT -> 7;
         };
 
         int nearRow = row + dirs[index][0];

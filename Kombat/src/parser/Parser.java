@@ -24,34 +24,47 @@ public class Parser {
     public Strategy parseStrategy() {
         List<Statement> stmts = new ArrayList<>();
         while (!check(TokenType.EOF)) {
+            skipNewlines();
+            if (check(TokenType.EOF)) break;
             stmts.add(parseStatement());
         }
         return new Strategy(stmts);
     }
 
     private Statement parseStatement() {
-        if (match(TokenType.IF)) return parseIf();
-        if (match(TokenType.WHILE)) return parseWhile();
-        if (match(TokenType.MOVE)) return parseMove();
-        if (match(TokenType.SHOOT)) return parseShoot();
-        if (match(TokenType.DONE)) {
-            consume(TokenType.SEMICOLON);
-            return new DoneCommand();
+        Statement stmt = null;
+        if (match(TokenType.IF)) {
+            stmt = parseIf();
+        } else if (match(TokenType.WHILE)) {
+            stmt = parseWhile();
+        } else if (match(TokenType.MOVE)) {
+            stmt = parseMove();
+        } else if (match(TokenType.SHOOT)) {
+            stmt = parseShoot();
+        } else if (match(TokenType.DONE)) {
+            stmt = new DoneCommand();
+        } else if (match(TokenType.LBRACE)) {
+            stmt = parseBlock();
+        } else {
+            Token name = consume(TokenType.IDENT);
+            consume(TokenType.ASSIGN);
+            Expression expr = parseExpression();
+            stmt = new AssignmentStatement(name.lexeme, expr);
         }
-        if (match(TokenType.LBRACE)) return parseBlock();
-
-        Token name = consume(TokenType.IDENT);
-        consume(TokenType.ASSIGN);
-        Expression expr = parseExpression();
-        consume(TokenType.SEMICOLON);
-        return new AssignmentStatement(name.lexeme, expr);
+        consumeStatementEnd();
+        return stmt;
     }
 
     private Statement parseIf() {
         Expression cond = parseExpression();
+        skipNewlines();
+        consume(TokenType.THEN);
+        skipNewlines();
         Statement thenStmt = parseStatement();
         Statement elseStmt = null;
+        skipNewlines();
         if (match(TokenType.ELSE)) {
+            skipNewlines();
             elseStmt = parseStatement();
         }
         return new IfStatement(cond, thenStmt, elseStmt);
@@ -59,6 +72,7 @@ public class Parser {
 
     private Statement parseWhile() {
         Expression cond = parseExpression();
+        skipNewlines();
         Statement body = parseStatement();
         return new WhileStatement(cond, body);
     }
@@ -66,6 +80,8 @@ public class Parser {
     private Statement parseBlock() {
         List<Statement> stmts = new ArrayList<>();
         while (!check(TokenType.RBRACE)) {
+            skipNewlines();
+            if (check(TokenType.RBRACE)) break;
             stmts.add(parseStatement());
         }
         consume(TokenType.RBRACE);
@@ -74,14 +90,12 @@ public class Parser {
 
     private Statement parseMove() {
         Direction dir = Direction.valueOf(consume(TokenType.DIRECTION).lexeme.toUpperCase());
-        consume(TokenType.SEMICOLON);
         return new MoveCommand(dir);
     }
 
     private Statement parseShoot() {
         Direction dir = Direction.valueOf(consume(TokenType.DIRECTION).lexeme.toUpperCase());
         Expression cost = parseExpression();
-        consume(TokenType.SEMICOLON);
         return new ShootCommand(dir, cost);
     }
 
@@ -110,6 +124,15 @@ public class Parser {
     }
 
     private Expression parseFactor() {
+        Expression expr = parsePrimary();
+        while (match(TokenType.POW)) {
+            Expression right = parsePrimary();
+            expr = new BinaryExpression(expr, right, Operator.POW);
+        }
+        return expr;
+    }
+
+    private Expression parsePrimary() {
         if (match(TokenType.NUMBER)) {
             return new LiteralExpression(Long.parseLong(previous().lexeme));
         }
@@ -134,6 +157,18 @@ public class Parser {
         throw new RuntimeException("Unexpected token: " + peek());
     }
 
+    private void consumeStatementEnd() {
+        while (check(TokenType.SEMICOLON) || check(TokenType.NEWLINE)) {
+            advance();
+        }
+    }
+
+    private void skipNewlines() {
+        while (check(TokenType.NEWLINE)) {
+            advance();
+        }
+    }
+
     private boolean match(TokenType... types) {
         for (TokenType t : types) {
             if (check(t)) {
@@ -146,7 +181,7 @@ public class Parser {
 
     private Token consume(TokenType type) {
         if (check(type)) return advance();
-        throw new RuntimeException("Expected " + type);
+        throw new RuntimeException("Expected " + type + " but got " + peek().type);
     }
 
     private boolean check(TokenType type) {
